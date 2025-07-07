@@ -5,6 +5,7 @@ public class OrderService {
     private double thresholdAmount = 0;
     private double thresholdDiscount = 0;
     private String bogoCategory = null;
+    private boolean double11Active = false;
     
     public void configureThresholdDiscount(double threshold, double discount) {
         if (threshold < 0 || discount < 0) {
@@ -21,10 +22,14 @@ public class OrderService {
         this.bogoCategory = category;
     }
     
+    public void configureDouble11Promotion() {
+        this.double11Active = true;
+    }
+    
     public Order checkout(List<OrderItem> items) {
         // Calculate pricing based on original quantities
         double originalAmount = calculateOriginalAmount(items);
-        double discount = calculateDiscount(originalAmount);
+        double discount = calculateDiscount(originalAmount, items);
         double totalAmount = originalAmount - discount;
         
         // Create result items and apply BOGO promotions to modify quantities
@@ -42,12 +47,17 @@ public class OrderService {
         return amount;
     }
     
-    private double calculateDiscount(double originalAmount) {
+    private double calculateDiscount(double originalAmount, List<OrderItem> items) {
         double discount = 0;
         
-        // Apply threshold discount if configured and amount meets threshold
-        if (hasThresholdDiscount() && originalAmount >= thresholdAmount) {
-            discount += thresholdDiscount;
+        // Apply Double 11 discount if active
+        if (double11Active) {
+            discount += calculateDouble11Discount(items);
+        } else {
+            // Apply threshold discount if configured and amount meets threshold
+            if (hasThresholdDiscount() && originalAmount >= thresholdAmount) {
+                discount += thresholdDiscount;
+            }
         }
         
         return discount;
@@ -55,6 +65,24 @@ public class OrderService {
     
     private boolean hasThresholdDiscount() {
         return thresholdAmount > 0;
+    }
+    
+    private double calculateDouble11Discount(List<OrderItem> items) {
+        double totalDiscount = 0;
+        
+        for (OrderItem item : items) {
+            int quantity = item.getQuantity();
+            double unitPrice = item.getProduct().getUnitPrice();
+            
+            // Calculate how many groups of 10 this product has
+            int discountedGroups = quantity / 10;
+            
+            // Each group of 10 gets 20% discount
+            double discountPerGroup = 10 * unitPrice * 0.2;
+            totalDiscount += discountedGroups * discountPerGroup;
+        }
+        
+        return totalDiscount;
     }
     
     private boolean hasBuyOneGetOnePromotion() {

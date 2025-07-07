@@ -102,4 +102,13 @@ public class OrderSteps {
         // Configure the OrderService with BOGO promotion
         orderService.configureBuyOneGetOnePromotion("cosmetics");
     }
+    
+    @Given("the Double 11 promotion is active")
+    public void theDouble11PromotionIsActive() {
+        orderService = new OrderService();
+        orderItems = new ArrayList<>();
+        
+        // Configure the OrderService with Double 11 promotion
+        orderService.configureDouble11Promotion();
+    }
 }
