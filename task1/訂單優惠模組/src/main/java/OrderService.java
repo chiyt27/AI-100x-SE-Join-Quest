@@ -53,11 +53,11 @@ public class OrderService {
         // Apply Double 11 discount if active
         if (double11Active) {
             discount += calculateDouble11Discount(items);
-        } else {
-            // Apply threshold discount if configured and amount meets threshold
-            if (hasThresholdDiscount() && originalAmount >= thresholdAmount) {
-                discount += thresholdDiscount;
-            }
+        }
+        
+        // Apply threshold discount if configured and amount meets threshold
+        if (hasThresholdDiscount() && originalAmount >= thresholdAmount) {
+            discount += thresholdDiscount;
         }
         
         return discount;
