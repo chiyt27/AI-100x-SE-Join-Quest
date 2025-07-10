@@ -53,4 +53,12 @@ public class Game {
     public Board getBoard() {
         return board;
     }
+    
+    public Color getCurrentPlayer() {
+        return currentPlayer;
+    }
+    
+    public void switchPlayer() {
+        currentPlayer = (currentPlayer == Color.RED) ? Color.BLACK : Color.RED;
+    }
 }
